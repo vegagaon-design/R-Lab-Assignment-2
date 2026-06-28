@@ -1,4 +1,6 @@
 ######################## CE 372 LAB 3: Descriptive statistics and data visualization ###############################
+### Name: Marisol Vega-Gaona
+### PID: 181474617
 
 #Question 1:
 #Step 1: Clear console and environment
