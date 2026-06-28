@@ -1,233 +1,212 @@
 ######################## CE 372 LAB 3: Descriptive statistics and data visualization ###############################
 
+#Question 1:
+#Step 1: Clear console and environment
 ## Remove variables from Environment ##
 rm(list=ls())   
 
+#Question 1:
+#Step 1: Clear console and environment
 ## Clear console (ctrl+L)##
 cat("\f") 
 
+#Question 1:
+#Step 1: Clear console and environment
 ###### Close all open devices (plots) #######
 if(!is.null(dev.list())) dev.off()
 
 start.time = Sys.time() 
 
+#Question 1:
 ## get the current working directly ##
+
+## Prints the current working directory.
+#Step 2: set up your directory and Read your file
 getwd() 
 
 
 ## to set a directory to current working directly ##
-setwd("C:/Users/rahul/OneDrive - Michigan State University/Courses/TA/4_CE 372 Summer Semester 2022/R-Lab/Week #5 and #6") 
+## Changes the working directory to the folder where your dataset is stored.
+setwd("C:/Users/vegagaon/Downloads/CE372_Assignment_2") 
 
 
 ## read data from an excel file ##
-my_data=read.csv("CE 372_dataset5.csv",
+## Reads a CSV file into a data frame called my_data.header=T → first row contains column names.
+
+climate=read.csv("CE 372_dataset5.csv",
+                 header=T,sep=",")
+
+my_data=read.csv("CE 372_dataset6.csv",
                   header=T,sep=",")
 
+######################## QUESTION 1 ###############################
+#Question 1:
+
+names(my_data) #noting the correct names for indexing for data set 6 
+
+names(climate) #noting the correct names for indexing for data set 5
+
+# Step 3: Create an index for Condition 1: station=="MERRA" & Condition 2: year==2001 & Condition 3: factor=="Temperature" (ALL 3 conditions must be true at the same time!) 
+# Step 4: Using this index extract column average
+
+idx_merra_2001_temp <- my_data$Station == "MERRA" &
+  my_data$Year    == 2001 &
+  my_data$Factor  == "Temperature"
+
+merra_2001_temp_vals <- my_data$MonthlyAverage[idx_merra_2001_temp]
+
+
+#Step 5: Find the mean of the extracted column
 ## Mean of a dataset ##
-average1=mean(my_data$IRI,na.rm=T)
-print(average1)
+merra_2001_temp_mean <- mean(merra_2001_temp_vals, na.rm = TRUE)
+print(merra_2001_temp_mean)
 
+
+
+#Step 6: Repeat the steps for dataset "climate" and "my_data" 
+## NARR Temperature 2001
+idx_narr_2001_temp <- my_data$Station == "NARR" &
+  my_data$Year    == 2001 &
+  my_data$Factor  == "Temperature"
+
+narr_2001_temp_vals <- my_data$MonthlyAverage[idx_narr_2001_temp]
+narr_2001_temp_mean <- mean(narr_2001_temp_vals, na.rm = TRUE)
+print(narr_2001_temp_mean)
+
+## MERRA Sunshine 2001
+idx_merra_2001_sun <- my_data$Station == "MERRA" &
+  my_data$Year    == 2001 &
+  my_data$Factor  == "Sunshine"
+
+merra_2001_sun_vals <- my_data$MonthlyAverage[idx_merra_2001_sun]
+merra_2001_sun_mean <- mean(merra_2001_sun_vals, na.rm = TRUE)
+print(merra_2001_sun_mean)
+
+## NARR Sunshine 2001
+idx_narr_2001_sun <- my_data$Station == "NARR" &
+  my_data$Year    == 2001 &
+  my_data$Factor  == "Sunshine"
+
+narr_2001_sun_vals <- my_data$MonthlyAverage[idx_narr_2001_sun]
+narr_2001_sun_mean <- mean(narr_2001_sun_vals, na.rm = TRUE)
+print(narr_2001_sun_mean)
+
+########## END OF QUESTION 1 ########################
+
+
+########### QUESTION 2 #####################
+## Shows min, max, mean, quartiles for each column.
 summary(my_data)
+print(my_data)
+#Step 3: Create an index for station=="MERRA" & factor=="Temperature"
+idx_merra_temp <- my_data$Station == "MERRA" &
+  my_data$Factor  == "Temperature"
 
-xx=c(-21,-5,2,3,4.2,7,8,12,18,54)
-yy=mean(xx,trim=0.5,na.rm=T)
-yy
+#Step 4: Using this index extract column MonthlyAverage
+merra_temp_vals <- my_data$MonthlyAverage[idx_merra_temp]
 
-## Median of a dataset ##
-median1=median(my_data$IRI,na.rm=T)
-median1
+#Step 5: Plot the extracted column with months (1:24)
+months <- 1:24   # Assignment requires months 1–24
 
-## Standard deviation, variance and Coefficient of variation ##
-Std_Dev = sd(my_data$IRI,na.rm=T)
-Std_Dev
+plot(x = months, y = merra_temp_vals, type = "b",
+     main = "Average Monthly Temperature (MERRA vs NARR)",
+     xlab = "Month (1–24)",
+     ylab = "Temperature (°F)",
+     col = "blue",
+     xlim = c(1, 24),
+     ylim = c(min(merra_temp_vals), max(merra_temp_vals)))
 
-Variance = var(my_data$IRI,na.rm=T)
-Variance
+#Step 6: Overlay NARR Temperature using par(new=TRUE)
+idx_narr_temp <- my_data$Station == "NARR" &
+  my_data$Factor  == "Temperature"
 
-print(Std_Dev^2)
-print(sqrt(Variance))
+narr_temp_vals <- my_data$MonthlyAverage[idx_narr_temp]
 
-Coeff_of_Variation = Std_Dev/average1
-Coeff_of_Variation
+par(new = TRUE)   # Overlay on previous plot
 
-## Covariance and Correlation ##
-Covariance = cov(my_data$IRI,my_data$TRCrack) #,use="na.or.complete")
-print(paste("Covariance =",Covariance),quote=F)
+plot(x = months, y = narr_temp_vals, type = "b",
+     col = "red",
+     axes = FALSE,   # No new axes
+     xlab = "",      # Blank labels as required
+     ylab = "",
+     xlim = c(1, 24),
+     ylim = c(min(merra_temp_vals, narr_temp_vals),
+              max(merra_temp_vals, narr_temp_vals)))
 
-Correlation = cor(my_data$IRI,my_data$TRCrack,use="na.or.complete")
-print(paste("Correlation =",Correlation),quote=F)
+legend("topleft",
+       legend = c("MERRA", "NARR"),
+       col = c("blue", "red"),
+       pch = 1,
+       bty = "o")
 
-## Plot graphs to visualize correlation ##
-plot(my_data$IRI,my_data$Fault)
+######################## SUNSHINE PLOT ###############################
 
-pairs(my_data[,2:4]) ## compare all pairwise in a single plot
+#Step 7: Repeat the same steps for Sunshine
 
-##### Plot correlation plots ####
+#Index for MERRA Sunshine
+idx_merra_sun <- my_data$Station == "MERRA" &
+  my_data$Factor  == "Sunshine"
 
-install.packages("corrplot")
+merra_sun_vals <- my_data$MonthlyAverage[idx_merra_sun]
 
-library(corrplot)
+#Plot MERRA Sunshine
+plot(x = months, y = merra_sun_vals, type = "b",
+     main = "Average Monthly Sunshine (MERRA vs NARR)",
+     xlab = "Month (1–24)",
+     ylab = "Sunshine (%)",
+     col = "blue",
+     xlim = c(1, 24),
+     ylim = c(min(merra_sun_vals), max(merra_sun_vals)))
 
-# Positive correlations are shown in blue, negative correlations in red
+#Overlay NARR Sunshine
+idx_narr_sun <- my_data$Station == "NARR" &
+  my_data$Factor  == "Sunshine"
 
-# Color intensisty and size of the circle are proportional to the correlation coefficients
+narr_sun_vals <- my_data$MonthlyAverage[idx_narr_sun]
 
-corrplot(cor(my_data[,2:4], method="spearman"), method ="circle", order = "alphabet", type = "upper") 
+par(new = TRUE)
 
-corrplot(cor(my_data[,2:4], method="spearman"), method ="number", type = "upper")
+plot(x = months, y = narr_sun_vals, type = "b",
+     col = "red",
+     axes = FALSE,
+     xlab = "",
+     ylab = "",
+     xlim = c(1, 24),
+     ylim = c(min(merra_sun_vals, narr_sun_vals),
+              max(merra_sun_vals, narr_sun_vals)))
 
-## Estimate percentiles ##
-my_percentile = quantile(my_data$IRI, probs=c(0,0.25,0.5,0.9,1),na.rm=T)
-my_percentile
+legend("topleft",
+       legend = c("MERRA", "NARR"),
+       col = c("blue", "red"),
+       pch = 1,
+       bty = "o")
 
-## Scatter plot ##
+########## END OF QUESTION 2 ########################
 
-plot(x=my_data$AgeMonth,y=my_data$IRI,type="p",
-     main = "IRI vs Age (Months)",
-     xlab = "Age (Months)",
-     ylab = "IRI (in/mile)",
-     xlim = c(0,300),
-     ylim = c(0,200),
-)
+########### QUESTION 3 ################################# 
+## Use any statistical value/parameter or plots to determine your answer.
+## 3) (2 pts) Using any statistical parameter and/or data visualization, recommend which climatic
+#station (MERRA or NARR) is better. Explain why.
 
-##### Indexing of desired input #######
-Idx1=my_data$BMP==0.898 & my_data$EMP==5.886
+## Temperature Seasonal Variation
+## Both stations show clear seasonal cycles.
 
-plot(x=my_data$AgeMonth[Idx1],y=my_data$IRI[Idx1],type="b",
-     main = "IRI vs Age (Months)",
-     xlab = "Age (Months)",
-     ylab = "IRI",
-     xlim = c(0,300),
-     ylim = c(0,200),
-)
+## Temperatures increase during mid‑year months, that's Summer. And, decrease during early and late months (Winter).
 
-## Saving a plot ##
+## NARR and MERRA may differ slightly in peak temperature and variability.
 
-png("scatter_plot.png")   ## Open graphics device as png function
-## You can use BMP, JPEG, pdf etc
-plot(x=my_data$AgeMonth[Idx1],y=my_data$IRI[Idx1],type="b",
-     main = "IRI vs Age (Months)",
-     xlab = "Age (Months)",
-     ylab = "IRI",
-     xlim = c(0,300),
-     ylim = c(0,200),
-)
-dev.off()                 ## Close the opened device
 
-## Plotting multiple data series in single plot ##
-Idx1=my_data$BMP==0.898 & my_data$EMP==5.886
-Idx2=my_data$BMP==0.905 & my_data$EMP==5.602
-Idx3=my_data$BMP==5.617 & my_data$EMP==6.503
-par(mgp=c(3,1,0),mar=c(5,4,4,2)+0.1)  # Parameter to change axis label and tick spacing
-plot(x=my_data$AgeMonth[Idx1],y=my_data$IRI[Idx1],type="b",
-     col = 2,pch=2,     # colour and point character style
-     main = "IRI vs Age",
-     xlab = "Age (Months)",
-     ylab = "IRI (in/mile)",
-     xlim = c(0,300),
-     ylim = c(0,250),
-     #log='x',  # create x or y axis in log scale (try y and xy)
-     las=0,    # label style (horizontal or vertical). Try changing to 1,2,3
-     bty = "o",  # box type. Try changing to n
-     cex.main=1, # Character expansion ratio for title (try changing less than
-     # or greater than 1)
-     cex.lab=1,  # Character expansion ratio for labels
-     cex.axis=1,  # Character expansion ratio for axis text
-)
+## Sunshine Seasonal Variation
+## Sunshine percentages rise during summer months and fall during winter months.
 
-axis(side=1,at=c(0,50,100,150,200,250,300))  # Fix tick labels on x and y axis
-axis(side=2,at=c(0,50,100,150,200,250))  
-abline(h=170,col="red",lty=5,lwd=2) # Make a line in the plot
-text(280,30,"My text 1")            # Show text inside the plot
-mtext("My text 2",side=3,at=250)          # Show text on a side/margin
-par(new=TRUE)                         # to hold the previous chart
-plot(x=my_data$AgeMonth[Idx2],y=my_data$IRI[Idx2],type="b", 
-     axes=F, xlab="",ylab="",col = 3,pch=1)
-par(new=TRUE)                         # to hold the previous chart
-plot(x=my_data$AgeMonth[Idx3],y=my_data$IRI[Idx3],type="b", 
-     axes=F, xlab="",ylab="",col = 4,pch=1)
-legend(x="topleft",legend=c("Series1","Series2","Series3"),
-       col=c(2,3,4),pch=c(2,1,1),bty="o",cex=0.8)
-dev.off()
+## MERRA and NARR may differ in amplitude (how strong the seasonal cycle is).
 
-## Plots multiple sub-plots in one plot ##
-par(mfrow=c(1,2))
-plot(x=my_data$AgeMonth[Idx1],y=my_data$IRI[Idx1],type="b",
-     col = 2,pch=2,     # color and point character style
-     main = "IRI vs Age",
-     xlab = "Age (Months)",
-     ylab = "IRI (in/mile)",
-     xlim = c(0,300),
-     ylim = c(0,250),
-     las=0,    # label style (horizontal or vertical). Try changing to 1,2,3
-     bty = "o",  # box type. Try changing to n
-     cex.main=1, # Character expansion ration for title (try 
-     #changing it less than or greater than 1)
-     cex.lab=1,  # Character expansion ration for labels
-     cex.axis=1,  # Character expansion ration for axis text
-)
-plot(my_data$AgeMonth[Idx1],y=my_data$TRCrack[Idx1],type="b",
-     main ="Transverse Cracking vs Age",
-     xlab="Age (Months)",
-     ylab="Transverse Cracking (%)",
-     xlim = c(0,300),
-     ylim = c(0,100),
-     col = 3,pch=1)
-dev.off()
+## Sunshine typically peaks around months 6–9 and dips around months 1–3 and 11–12.
 
-## Plot histigrams ##
+######### END OF QUESTION 3 ##################
 
-hist(my_data$Fault, 
-     main = "Histogram of Faulting",
-     xlab = "Faulting (in)",
-     ylab = "No. of occurrences",
-     col="red", border="black",
-     breaks = seq(0, #min(my_data$Fault,na.rm=T), 
-                  max(my_data$Fault,na.rm=T), length.out = 5))
-box()
 
-## Plot bar charts ##
 
-barplot(my_data$TRCrack,col="red",xlab="Age (Months)",
-        ylab="Transverse Crack (%)",
-        main="Bar plot for Transverse Cracking",
-        names.arg=my_data$AgeMonth)
-box()
 
-#barplot(my_data$TRCrack~my_data$IRI)
 
-## Plot 2 bars in the same plot ##
-Idx4=my_data$DIR=="I" & my_data$AgeMonth>48
-Idx5=my_data$DIR=="D"
-bardata=rbind(my_data$IRI[Idx4],my_data$IRI[Idx5])
-barplot(bardata,beside=T,col=c("red","green"),xlab="Index (Months)",
-        ylab="IRI",names.arg=1:9,
-        legend.text = c("IRI-I","IRI-D"),ylim=c(0,250),
-        args.legend=list(x="topleft",cex=0.8))
-box()
-
-## Plot overlapping bars ##
-
-barplot(my_data$IRI[Idx4],col="red",xlab="Index (Months)",ylim=c(0,250),
-        ylab="IRI",names.arg=1:9)
-
-par(new=T)
-barplot(my_data$IRI[Idx5],col="green",axes=F,ylim=c(0,250))
-legend(x="topleft",c("IRI-I","IRI-D"),col=c("red","green"),
-       pch=c(15,15),bty="o",cex=1)
-box()
-
-## Box plot ##
-
-boxplot(my_data$TRCrack,
-        main="Boxplot for Transverse Cracking",
-        ylab="Transverse Cracking (%)",col="red",notch=F)
-
-boxplot(my_data$TRCrack~my_data$BMP,
-        main="Boxplot for Transverse Cracking",
-        ylab="Transverse Cracking (%)",xlab="Direction")
-
-end.time = Sys.time()
-time.taken = round(end.time - start.time,3)
-time.taken
 
